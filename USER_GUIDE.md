@@ -9,7 +9,8 @@
 5. [Advanced Usage](#advanced-usage)
 6. [Accessing Your Kali Instance](#accessing-your-kali-instance)
 7. [Customizing Your Environment](#customizing-your-environment)
-8. [Troubleshooting](#troubleshooting)
+8. [Publishing to boxes.wtf Registry](#publishing-to-boxeswtf-registry)
+9. [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -197,6 +198,150 @@ All data saved in the `/data` directory within the container will be preserved a
 
 You can modify the `scripts/init.sh` script to customize the initialization process, such as installing additional software or configuring system settings.
 
+## Publishing to boxes.wtf Registry
+
+Dragoon now supports publishing your configured Kali Linux environment to the boxes.wtf registry, allowing you to share your customized environments with others or deploy them across multiple systems.
+
+### The boxes.config.yaml File
+
+The main configuration file for boxes.wtf registry integration is `boxes.config.yaml`, located in the repository root. This file follows the official boxes.wtf specification and contains all the configuration needed for the registry:
+
+```yaml
+# Dragoon - boxes.wtf Registry Configuration
+
+metadata:
+  name: "dragoon-kali"
+  version: "1.0.0"
+  description: "Kali Linux environment powered by Dragoon"
+  category: "security-tools"
+  tags: ["kali", "security", "penetration-testing"]
+
+container:
+  dockerfile: "./docker/Dockerfile"
+  resources:
+    cpu: "1"
+    memory: "1Gi"
+    storage: "10Gi"
+  environment:
+    KALI_VERSION: "latest"
+    ADDITIONAL_TOOLS: "aircrack-ng dirb sqlmap wireshark"
+
+networking:
+  ports:
+    - name: "ssh"
+      port: 22
+      protocol: "TCP"
+      public: true
+  health:
+    path: "/health"
+    port: 80
+    interval: "30s"
+    timeout: "5s"
+    retries: 3
+```
+
+You can modify this file directly if you need fine-grained control over the registry configuration. For most use cases, the default configuration is sufficient and will be automatically updated with your values during deployment.
+
+### Registry Configuration
+
+Edit `config/default.conf` to include your registry settings:
+
+```bash
+# boxes.wtf registry settings
+# API key for boxes.wtf registry
+BOXES_WTF_API_KEY="your-api-key-here"
+# OR use a file containing the API key
+BOXES_WTF_API_KEY_FILE="/path/to/api-key-file"
+
+# Box information
+BOX_NAME="My Kali Environment"
+BOX_VERSION="1.0.0"
+BOX_DESCRIPTION="Customized Kali Linux environment with security tools"
+BOX_CATEGORY="security-tools"
+BOX_TAGS="kali,security,penetration-testing"
+```
+
+### Publishing During Deployment
+
+To publish your environment to the registry during deployment:
+
+```bash
+./deploy.sh --publish --api-key "your-api-key"
+```
+
+You can also override the box information during deployment:
+
+```bash
+./deploy.sh --publish --box-name "My Custom Kali" --box-version "1.2.0" --api-key "your-api-key"
+```
+
+### Publishing an Existing Deployment
+
+To publish an existing deployment:
+
+```bash
+./scripts/publish.sh --name "My Kali Box" --api-key "your-api-key"
+```
+
+To use the full template configuration from `config/boxes-template.yaml`:
+
+```bash
+./scripts/publish.sh --name "My Kali Box" --api-key "your-api-key" --template
+```
+
+Available options for the publish script:
+
+- `--name`: Name for the box in the registry
+- `--version`: Version for the box (default: 1.0.0)
+- `--description`: Description for the box
+- `--category`: Category for the box (default: security-tools)
+- `--tags`: Comma-separated tags for the box
+- `--api-key`: API key for the boxes.wtf registry
+- `--template`: Use the full template configuration (more advanced settings)
+
+### Health Checks and Advanced Features
+
+The registry integration includes a health check endpoint at `/health` on port 80, which provides status information about your container:
+
+- SSH service status
+- System load
+- Available memory
+- Available disk space
+
+This health check is automatically started when the container runs in the boxes.wtf environment.
+
+### Customizing the Dockerfile for Registry
+
+When publishing to the registry, Dragoon uses a special Dockerfile located at `docker/Dockerfile`. This file defines the container image that will be uploaded to the boxes.wtf registry.
+
+You can customize this Dockerfile to include additional tools, configurations, or optimizations for your published boxes:
+
+```bash
+# Default location
+docker/Dockerfile
+```
+
+The default Dockerfile includes:
+
+1. Base Kali Linux image
+2. Essential security tools
+3. SSH server configuration
+4. Data directory setup
+5. Health check implementation
+6. Initialization script
+
+If you modify the Dockerfile, those changes will be included in all future registry publications.
+
+### Accessing Published Boxes
+
+After publishing, your box will be available at:
+
+```
+https://boxes.wtf/box/<box-id>
+```
+
+The box ID is generated based on the name you provided (with spaces replaced by hyphens and lowercase).
+
 ## Troubleshooting
 
 ### Common Issues
@@ -216,8 +361,15 @@ You can modify the `scripts/init.sh` script to customize the initialization proc
    - Check if the DISPLAY environment variable is set correctly
 
 4. **Cannot connect via SSH:**
+
    - Verify the container is running: `docker ps`
    - Check if SSH service is running: `docker exec -it dragoon-kali service ssh status`
+
+5. **Registry publishing fails:**
+   - Ensure your API key is correct
+   - Check your internet connection
+   - Verify that the boxes.wtf API is accessible
+   - Check if your Dockerfile contains any syntax errors
 
 ### Getting Help
 
