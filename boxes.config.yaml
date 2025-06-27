@@ -9,6 +9,7 @@ metadata:
 
 container:
   dockerfile: "./docker/Dockerfile"
+  runtime: "linux"
   resources:
     cpu: "1"
     memory: "1Gi"

@@ -1,0 +1,60 @@
+# Version control
+.git/
+.github/
+.gitignore
+
+# Development files
+node_modules/
+*.log
+.vscode/
+.idea/
+*.md
+!README.md
+!USER_GUIDE.md
+
+# Build artifacts
+*.tar.gz
+*.tgz
+*.zip
+*.tar
+
+# Test files
+__tests__/
+tests/
+test/
+*.test.js
+*.spec.js
+
+# Deployment scripts (only needed for local deployment)
+deploy.sh
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Large data directories (should be mounted at runtime)
+data/
+!data/.gitkeep
+
+# Documentation (except essential files)
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+LICENSE
+
+# CI/CD artifacts
+.travis.yml
+.gitlab-ci.yml
+.circleci/
+
+# Other non-essential files
+*.pdf
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+*.doc
+*.docx 

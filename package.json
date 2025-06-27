@@ -1,0 +1,38 @@
+{
+  "name": "dragoon",
+  "version": "1.0.0",
+  "description": "Kali Linux environment for security testing and penetration testing",
+  "main": "index.js",
+  "scripts": {
+    "start": "./setup.sh",
+    "deploy": "./deploy.sh",
+    "publish": "./scripts/publish.sh",
+    "init": "./scripts/init.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DecOperations/dragoon.git"
+  },
+  "keywords": [
+    "kali",
+    "security",
+    "penetration-testing",
+    "hacking",
+    "cybersecurity",
+    "containers",
+    "boxes.wtf"
+  ],
+  "author": "DecOperations",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DecOperations/dragoon/issues"
+  },
+  "homepage": "https://github.com/DecOperations/dragoon#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.3.0"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}

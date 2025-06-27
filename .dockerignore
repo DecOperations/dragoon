@@ -1,0 +1,57 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Node.js dependencies
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Dev environments
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.vscode
+.idea
+
+# Build outputs
+dist
+build
+*.log
+
+# Documentation
+README.md
+LICENSE
+USER_GUIDE.md
+CONTRIBUTING.md
+*.md
+!package.json
+
+# Testing
+__tests__
+test
+tests
+coverage
+
+# Deployment files
+deploy.sh
+.github
+.travis.yml
+.gitlab-ci.yml
+
+# Temp files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+
+# Large files/directories
+data
+*.tar
+*.gz
+*.zip 
