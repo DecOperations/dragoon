@@ -1,0 +1,105 @@
+# Boxes.wtf Registry Template Configuration
+# This is a comprehensive template for boxes.wtf registry
+
+metadata:
+  name: "dragoon-kali"
+  version: "1.0.0"
+  description: "Kali Linux environment powered by Dragoon"
+  category: "security-tools"
+  tags: ["kali", "security", "penetration-testing"]
+
+container:
+  dockerfile: "./Dockerfile"
+  resources:
+    cpu: "1"
+    memory: "1Gi"
+    storage: "10Gi"
+  environment:
+    KALI_VERSION: "latest"
+    ADDITIONAL_TOOLS: "aircrack-ng dirb sqlmap wireshark"
+    ENABLE_GUI: "false"
+  build:
+    commands:
+      - "apt-get update"
+      - "apt-get install -y ${ADDITIONAL_TOOLS}"
+
+networking:
+  ports:
+    - name: "ssh"
+      port: 22
+      protocol: "TCP"
+      public: true
+      load_balancer:
+        enabled: true
+        algorithm: "round_robin"
+    - name: "http"
+      port: 80
+      protocol: "HTTP"
+      public: false
+
+  domains:
+    - name: "kali.example.com"
+      port: "ssh"
+      ssl: true
+
+  health:
+    path: "/health"
+    port: 80
+    interval: "30s"
+    timeout: "5s"
+    retries: 3
+
+  security:
+    rate_limiting:
+      requests_per_minute: 100
+    cors:
+      origins: ["https://example.com"]
+      methods: ["GET", "POST", "PUT", "DELETE"]
+
+deployment:
+  replicas:
+    min: 1
+    max: 3
+    target_cpu: 70
+  strategy: "rolling"
+  rolling:
+    max_unavailable: 1
+    max_surge: 1
+  blue_green:
+    test_traffic: 10
+    promotion_delay: "5m"
+  canary:
+    steps: [10, 25, 50, 100]
+    interval: "2m"
+
+security:
+  user:
+    run_as_non_root: false
+    uid: 1001
+    gid: 1001
+
+  network:
+    policies:
+      - name: "deny_all_egress"
+        action: "deny"
+        direction: "egress"
+        protocols: ["TCP", "UDP"]
+      - name: "allow_dns"
+        action: "allow"
+        direction: "egress"
+        ports: [53]
+        protocols: ["UDP"]
+
+  secrets:
+    environment:
+      - name: "API_KEY"
+        type: "secret"
+        key: "api-key"
+
+  vulnerability_scanning:
+    enabled: true
+    severity_threshold: "high"
+
+  compliance:
+    frameworks: ["SOC2", "PCI-DSS"]
+    auditing: true

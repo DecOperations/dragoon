@@ -1,0 +1,61 @@
+# Dragoon - boxes.wtf Registry Configuration
+
+metadata:
+  name: "dragoon-kali"
+  version: "1.0.0"
+  description: "Kali Linux environment powered by Dragoon for security testing and penetration testing"
+  category: "security-tools"
+  tags: ["kali", "security", "penetration-testing", "hacking", "cybersecurity"]
+
+container:
+  dockerfile: "./docker/Dockerfile"
+  resources:
+    cpu: "1"
+    memory: "1Gi"
+    storage: "10Gi"
+  environment:
+    KALI_VERSION: "latest"
+    ADDITIONAL_TOOLS: "aircrack-ng dirb sqlmap wireshark"
+    ENABLE_GUI: "false"
+  build:
+    commands:
+      - "chmod +x /scripts/init.sh /scripts/health-check.sh /scripts/health-server.py"
+
+networking:
+  ports:
+    - name: "ssh"
+      port: 22
+      protocol: "TCP"
+      public: true
+      load_balancer:
+        enabled: true
+        algorithm: "round_robin"
+    - name: "http"
+      port: 80
+      protocol: "HTTP"
+      public: false
+
+  health:
+    path: "/health"
+    port: 80
+    interval: "30s"
+    timeout: "5s"
+    retries: 3
+
+deployment:
+  replicas:
+    min: 1
+    max: 3
+    target_cpu: 70
+  strategy: "rolling"
+  rolling:
+    max_unavailable: 1
+    max_surge: 1
+
+security:
+  user:
+    run_as_non_root: false
+
+  vulnerability_scanning:
+    enabled: true
+    severity_threshold: "high"
